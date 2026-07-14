@@ -12,3 +12,6 @@ Thumbs.db
 
 # Node (only if a tooling step is ever added)
 node_modules/
+
+# Claude Code local tooling config (not part of the site)
+.claude/
