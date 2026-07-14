@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emily & Bruce — January 29, 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #e8ddd0;
+    --ivory: #f5f0ea;
+    --stone: #c4b49a;
+    --teal: #7aada6;
+    --deep-teal: #4a7b76;
+    --forest: #3d5a47;
+    --charcoal: #2c2c2a;
+    --warm-white: #faf8f5;
+    --gold: #b89d6e;
+
+    --hero-img: url('assets/hero.jpg');
+    --story-img: url('assets/story.jpg');
+    --schedule-img: url('assets/schedule.jpg');
+    --travel-img: url('assets/travel.png');
+    --rsvp-img: url('assets/gallery/02.jpg');
+    --gate-img: url('assets/hero.jpg');
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ── PASSWORD GATE ── */
+  #gate {
+    position: fixed; inset: 0;
+    background: var(--charcoal);
+    z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2rem;
+    transition: opacity 0.8s ease;
+  }
+  #gate.hidden { opacity: 0; pointer-events: none; }
+  #gate-bg {
+    position: absolute; inset: 0;
+    background-image: var(--gate-img);
+    background-size: cover; background-position: center;
+    opacity: 0.32;
+  }
+  #gate-content {
+    position: relative; z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+    padding: 2rem;
+  }
+  #gate h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 300; color: var(--ivory);
+    letter-spacing: 0.08em; line-height: 1.1;
+  }
+  #gate p {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--stone);
+  }
+  #gate-form { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+  #gate-input {
+    background: transparent;
+    border: none; border-bottom: 1px solid var(--stone);
+    color: var(--ivory); text-align: center;
+    font-family: 'Jost', sans-serif; font-size: 1rem;
+    letter-spacing: 0.15em; padding: 0.6rem 1rem;
+    width: 260px; outline: none;
+  }
+  #gate-input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0.1em; }
+  #gate-btn {
+    background: transparent; border: 1px solid var(--gold);
+    color: var(--gold); padding: 0.6rem 2.5rem;
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s;
+    margin-top: 0.25rem;
+  }
+  #gate-btn:hover { background: var(--gold); color: var(--charcoal); }
+  #gate-error { color: #e07070; font-size: 0.78rem; letter-spacing: 0.1em; min-height: 1em; }
+  #gate-hint {
+    margin-top: 1rem; font-size: 0.7rem; letter-spacing: 0.2em;
+    color: rgba(196,180,154,0.55); text-transform: uppercase;
+  }
+
+  /* ── SITE WRAPPER ── */
+  #site { display: block; }
+  #site.visible { display: block; animation: fadeIn 1s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250,248,245,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(196,180,154,0.3);
+    padding: 0 2rem;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 400; font-style: italic;
+    color: var(--charcoal); letter-spacing: 0.05em;
+    cursor: pointer; text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 0; list-style: none; }
+  .nav-links li a {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--charcoal); text-decoration: none;
+    padding: 0.5rem 1rem; display: block;
+    position: relative; transition: color 0.2s;
+  }
+  .nav-links li a::after {
+    content: ''; position: absolute; bottom: 0; left: 1rem; right: 1rem;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .nav-links li a:hover, .nav-links li a.active { color: var(--deep-teal); }
+  .nav-links li a:hover::after, .nav-links li a.active::after { transform: scaleX(1); }
+  .nav-date {
+    font-size: 0.7rem; letter-spacing: 0.2em; color: var(--stone);
+    text-transform: uppercase;
+  }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+  .hamburger span { width: 22px; height: 1px; background: var(--charcoal); display: block; }
+  @media (max-width: 860px) {
+    .nav-links, .nav-date { display: none; }
+    .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--warm-white); border-bottom: 1px solid var(--sand); padding: 1rem 0; }
+    .hamburger { display: flex; }
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── HOME ── */
+  .hero {
+    height: calc(100vh - 64px); min-height: 560px;
+    background-image: var(--hero-img);
+    background-size: cover; background-position: center 30%;
+    position: relative; display: flex; align-items: flex-end;
+    padding-bottom: 8vh;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(44,44,42,0.78) 0%, rgba(44,44,42,0.15) 50%, transparent 100%);
+  }
+  .hero-text {
+    position: relative; z-index: 1; text-align: center; width: 100%;
+    padding: 0 2rem;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--stone); margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    font-weight: 300; color: var(--ivory);
+    letter-spacing: 0.04em; line-height: 0.95;
+    margin-bottom: 1.5rem;
+  }
+  .hero-title em { font-style: italic; }
+  .hero-date {
+    font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(245,240,234,0.8);
+  }
+
+  /* countdown */
+  .countdown-section { background: var(--charcoal); padding: 3.5rem 2rem; text-align: center; }
+  .countdown-label { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--stone); margin-bottom: 2rem; }
+  .countdown-grid { display: flex; justify-content: center; align-items: baseline; gap: clamp(1rem, 4vw, 3rem); flex-wrap: wrap; }
+  .countdown-item { text-align: center; }
+  .countdown-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300;
+    color: var(--ivory); line-height: 1; display: block;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-unit { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--stone); display: block; margin-top: 0.4rem; }
+  .countdown-sep { font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); opacity: 0.5; }
+
+  /* story */
+  .story-section { display: grid; grid-template-columns: 1fr 1fr; min-height: 80vh; }
+  @media (max-width: 860px) { .story-section { grid-template-columns: 1fr; } }
+  .story-img {
+    background-image: var(--story-img);
+    background-size: cover; background-position: center 35%;
+    min-height: 460px;
+  }
+  .story-content {
+    background: var(--ivory); padding: 5rem 4rem;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  @media (max-width: 860px) { .story-content { padding: 3rem 2rem; } }
+  .section-eyebrow { font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; line-height: 1.15; margin-bottom: 1.75rem; color: var(--charcoal); }
+  .section-title em { font-style: italic; color: var(--deep-teal); }
+  .section-body { font-size: 0.95rem; line-height: 1.85; color: #5a5a56; font-weight: 300; text-wrap: pretty; }
+  .divider { width: 40px; height: 1px; background: var(--gold); margin: 2rem 0; }
+
+  /* ── OUR STORY PAGE ── */
+  .story-page-hero {
+    height: 55vh; min-height: 380px;
+    background-image: var(--story-img);
+    background-size: cover; background-position: center 30%;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .story-page-hero::before { content: ''; position: absolute; inset: 0; background: rgba(44,44,42,0.45); }
+  .story-page-hero-text { position: relative; z-index: 1; text-align: center; color: var(--ivory); padding: 0 2rem; }
+  .story-page-hero-text .eyebrow { font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--stone); margin-bottom: 1rem; }
+  .story-page-hero-text h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 300; letter-spacing: 0.06em; }
+  .story-page-hero-text h2 em { font-style: italic; }
+
+  .story-intro { max-width: 720px; margin: 0 auto; padding: 5rem 2rem 3rem; text-align: center; }
+  .story-intro p { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.3rem, 2.2vw, 1.65rem); font-weight: 300; line-height: 1.55; color: var(--charcoal); font-style: italic; text-wrap: balance; }
+  .story-intro .signoff { font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); font-style: normal; margin-top: 0; display: block; }
+
+  /* ── YEAR TIMELINE ── */
+  .story-timeline { max-width: 1180px; margin: 0 auto; padding: 1rem 2rem 4rem; }
+  .timeline-rule {
+    display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+    margin: 0 auto 4rem; max-width: 760px;
+  }
+  .timeline-rule .line { flex: 1; height: 1px; background: var(--sand); }
+  .timeline-rule .label {
+    font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); white-space: nowrap;
+  }
+
+  .year-block {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 3rem;
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--sand);
+    align-items: start;
+  }
+  .year-block:last-child { border-bottom: none; }
+  @media (max-width: 820px) {
+    .year-block { grid-template-columns: 1fr; gap: 1.5rem; padding: 3rem 0; }
+  }
+
+  .year-label {
+    position: sticky; top: 100px;
+    align-self: start;
+  }
+  @media (max-width: 820px) { .year-label { position: static; } }
+
+  .year-label .yr {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.2rem, 6vw, 4.5rem);
+    font-weight: 300; color: var(--charcoal);
+    line-height: 0.95; letter-spacing: 0.02em;
+  }
+  .year-label .yr em { font-style: italic; color: var(--gold); }
+  .year-label .yr-tag {
+    display: block;
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--stone); margin-top: 0.5rem;
+  }
+  .year-label .yr-rule {
+    width: 32px; height: 1px; background: var(--gold);
+    margin: 1rem 0;
+  }
+
+  .year-content { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .year-photos {
+    display: flex; flex-wrap: wrap; gap: 14px;
+  }
+  /* force a 3-per-row grid (two rows for a 6-photo year) */
+  .year-photos.two-rows .ph {
+    flex: 0 1 calc(33.333% - 10px);
+  }
+  @media (max-width: 540px) {
+    .year-photos.two-rows .ph { flex: 1 1 calc(50% - 8px); }
+  }
+  .year-photos .ph {
+    flex: 1 1 0; min-width: 0;
+    height: 300px;
+    background-color: var(--sand);
+    background-size: cover; background-position: center 28%;
+    overflow: hidden;
+    transition: transform 0.5s ease;
+    cursor: default;
+  }
+  .year-photos .ph:hover { transform: translateY(-3px); }
+  /* photo aspect hints — flex-grow proportional to aspect ratio */
+  .year-photos .ph[data-ar="square"] { flex-grow: 1; }
+  .year-photos .ph[data-ar="portrait"] { flex-grow: 0.8; }
+  .year-photos .ph[data-ar="wide"] { flex-grow: 1.5; }
+
+  @media (max-width: 820px) {
+    .year-photos .ph { height: 220px; }
+  }
+  @media (max-width: 540px) {
+    .year-photos { gap: 8px; }
+    .year-photos .ph { height: 180px; flex: 1 1 calc(50% - 8px); }
+  }
+
+  .year-caption {
+    font-size: 0.95rem; line-height: 1.8; color: #5a5a56;
+    font-weight: 300; text-wrap: pretty;
+    max-width: 640px;
+    padding-top: 0.25rem;
+  }
+  .year-caption em { font-style: italic; color: var(--deep-teal); }
+  .year-caption .placeholder-hint {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem; color: var(--stone);
+    margin-top: 0.5rem; letter-spacing: 0.05em;
+  }
+
+  /* highlight badge for milestone moments */
+  .year-block .milestone {
+    display: inline-block;
+    font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid var(--gold);
+    padding: 0.3rem 0.8rem; margin-bottom: 0.5rem;
+    width: max-content;
+  }
+
+  /* sub-moments inside a single year (used by 2026) */
+  .year-content .story-moment { display: flex; flex-direction: column; gap: 1rem; }
+  .year-content .story-moment + .story-moment { margin-top: 2.25rem; }
+  .moment-label {
+    display: flex; align-items: baseline; gap: 0.85rem;
+    font-size: 0.66rem; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--deep-teal);
+  }
+  .moment-label .mo-when { color: var(--stone); letter-spacing: 0.18em; }
+  .moment-label .mo-line { flex: 1; height: 1px; background: var(--sand); }
+  .year-content .moment-caption {
+    font-size: 0.95rem; line-height: 1.8; color: #5a5a56;
+    font-weight: 300; text-wrap: pretty; max-width: 640px;
+  }
+  .year-content .moment-caption em { font-style: italic; color: var(--deep-teal); }
+
+  .story-cta { background: var(--ivory); padding: 5rem 2rem; text-align: center; }
+  .story-cta h3 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; color: var(--charcoal); margin-bottom: 1rem; }
+  .story-cta h3 em { font-style: italic; color: var(--deep-teal); }
+  .story-cta p { font-size: 0.95rem; line-height: 1.7; color: #5a5a56; max-width: 520px; margin: 0 auto 2rem; }
+
+  /* quick info strip */
+  .info-strip { background: var(--ivory); padding: 4rem 2rem; }
+  .info-strip-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+  @media (max-width: 760px) { .info-strip-grid { grid-template-columns: repeat(2, 1fr); } }
+  .info-strip-grid > div > .label { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+  .info-strip-grid > div > .title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--charcoal); }
+  .info-strip-grid > div > .sub { font-size: 0.82rem; color: var(--stone); margin-top: 0.25rem; }
+
+  /* ── SCHEDULE ── */
+  .schedule-hero {
+    height: 55vh; min-height: 380px;
+    background-image: var(--schedule-img);
+    background-size: cover; background-position: center 40%;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .schedule-hero::before { content: ''; position: absolute; inset: 0; background: rgba(44,44,42,0.5); }
+  .schedule-hero-text { position: relative; z-index: 1; text-align: center; color: var(--ivory); }
+  .schedule-hero-text h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 300; letter-spacing: 0.06em; }
+  .schedule-hero-text p { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--stone); margin-top: 0.75rem; }
+
+  .schedule-body { max-width: 820px; margin: 0 auto; padding: 5rem 2rem; }
+  .day-block { margin-bottom: 4rem; }
+  .day-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--sand); }
+  .day-number { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 400; color: var(--gold); line-height: 1; }
+  .day-info { flex: 1; }
+  .day-date { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; color: var(--charcoal); }
+  .day-label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-top: 0.25rem; }
+  .event-list { display: flex; flex-direction: column; }
+  .event-item { display: grid; grid-template-columns: 90px 1fr; gap: 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid rgba(232,221,208,0.5); }
+  .event-time { font-size: 0.72rem; letter-spacing: 0.1em; color: var(--stone); padding-top: 0.15rem; text-align: right; }
+  .event-details { padding-left: 0.5rem; border-left: 1px solid var(--sand); }
+  .event-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--charcoal); margin-bottom: 0.25rem; }
+  .event-location { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--teal); text-transform: uppercase; }
+  .event-note { font-size: 0.85rem; color: #7a7a72; margin-top: 0.4rem; font-weight: 300; line-height: 1.65; text-wrap: pretty; }
+  .event-badge { display: inline-block; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; background: var(--gold); color: white; padding: 0.2rem 0.6rem; border-radius: 2px; margin-top: 0.5rem; }
+
+  .dress-card { background: var(--charcoal); color: var(--ivory); padding: 3rem 4rem; text-align: center; margin-top: 4rem; }
+  @media (max-width: 600px) { .dress-card { padding: 2rem 1.5rem; } }
+  .dress-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; margin-bottom: 1rem; letter-spacing: 0.05em; }
+  .dress-card p { font-size: 0.9rem; line-height: 1.8; color: rgba(245,240,234,0.75); font-weight: 300; }
+  .dress-examples { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; }
+  .dress-tag { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--gold); color: var(--gold); padding: 0.4rem 1rem; }
+
+  /* three-day dress guide */
+  .dress-guide { margin-top: 5rem; }
+  .dress-guide-head { text-align: center; margin-bottom: 2.5rem; }
+  .dress-guide-head h3 { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 300; letter-spacing: 0.05em; color: var(--charcoal); }
+  .dg-sub { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-top: 0.6rem; }
+  .dg-intro { font-size: 0.9rem; line-height: 1.7; color: #5a5a56; max-width: 540px; margin: 1.1rem auto 0; font-weight: 300; text-wrap: pretty; }
+  .dress-days { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; gap: 2px; background: var(--sand); border: 1px solid var(--sand); }
+  .dress-day { background: var(--ivory); padding: 1.5rem; display: grid; grid-row: span 2; grid-template-rows: subgrid; }
+  .dd-figure { background: #fbf6ee; margin: 1.4rem -1.5rem -1.5rem; border-top: 1px solid var(--sand); align-self: stretch; display: flex; align-items: flex-start; justify-content: center; }
+  .dd-figure img { height: clamp(300px, 30vw, 440px); width: auto; max-width: 100%; display: block; }
+  .dd-body { display: flex; flex-direction: column; }
+  @media (max-width: 720px){
+    .dress-days { grid-template-columns: 1fr; grid-template-rows: none; }
+    .dress-day { display: flex; flex-direction: column; grid-row: auto; }
+  }
+  .dd-day { font-size: 0.64rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
+  .dress-day h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 400; color: var(--charcoal); margin: 0.25rem 0 0.15rem; letter-spacing: 0.02em; line-height: 1.15; }
+  .dd-date { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--stone); }
+  .dd-desc { font-size: 0.83rem; line-height: 1.7; color: #5a5a56; font-weight: 300; text-wrap: pretty; margin-top: 0.85rem; }
+  .dd-palette { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--sand); }
+  .dd-sw { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 40px; }
+  .dd-sw i { width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+  .dd-sw span { font-size: 0.54rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone); text-align: center; line-height: 1.25; }
+  .dd-open { font-size: 0.8rem; color: var(--deep-teal); font-weight: 400; font-style: italic; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--sand); }
+  .dd-note { font-size: 0.76rem; color: #9a3b34; line-height: 1.55; margin-top: 0.9rem; text-wrap: pretty; }
+  .day-dress { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+  .day-dress .mini { display: flex; gap: 3px; }
+  .day-dress .mini i { width: 11px; height: 11px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+
+  /* ── TRAVEL ── */
+  .travel-hero {
+    height: 55vh; min-height: 380px;
+    background-image: var(--travel-img);
+    background-size: cover; background-position: center;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .travel-hero::before { content: ''; position: absolute; inset: 0; background: rgba(44,44,42,0.45); }
+  .travel-hero-text { position: relative; z-index: 1; text-align: center; color: var(--ivory); }
+  .travel-hero-text h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 300; letter-spacing: 0.06em; }
+
+  .travel-body { max-width: 1000px; margin: 0 auto; padding: 5rem 2rem; }
+
+  .stay-callout { background: var(--forest); color: var(--ivory); padding: 3rem; margin-bottom: 4rem; display: grid; grid-template-columns: 60px 1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 600px) { .stay-callout { grid-template-columns: 1fr; padding: 2rem; } }
+  .stay-icon { font-size: 2.5rem; line-height: 1; }
+  .stay-callout h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; margin-bottom: 0.75rem; letter-spacing: 0.03em; text-wrap: pretty; }
+  .stay-callout p { font-size: 0.9rem; line-height: 1.8; color: rgba(245,240,234,0.85); font-weight: 300; text-wrap: pretty; }
+  .stay-perks { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .perk-pill { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: var(--ivory); padding: 0.4rem 0.85rem; border-radius: 2px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 4rem; background: var(--sand); }
+  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+  .info-card { background: var(--ivory); padding: 2.5rem; }
+  .info-card h4 { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; }
+  .info-card .info-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; margin-bottom: 1rem; color: var(--charcoal); }
+  .info-card p, .info-card li { font-size: 0.88rem; line-height: 1.8; color: #5a5a56; font-weight: 300; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 0.4rem 0; border-bottom: 1px solid var(--sand); display: flex; justify-content: space-between; gap: 1rem; }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li .rate { color: var(--deep-teal); font-weight: 400; white-space: nowrap; }
+  .price-note { font-size: 0.75rem; color: var(--stone); margin-top: 1rem !important; text-wrap: pretty; }
+
+  /* rooms & rates */
+  .rooms-rates { margin-bottom: 4rem; }
+  .rooms-rates > h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; margin-bottom: 1.5rem; color: var(--charcoal); }
+  .booking-window { background: var(--forest); color: var(--ivory); padding: 1.75rem 2rem; margin-bottom: 2rem; border-left: 4px solid var(--gold); }
+  .booking-window .bw-label { font-size: 0.66rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+  .booking-window .bw-dates { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; letter-spacing: 0.02em; margin-bottom: 0.6rem; }
+  .booking-window p { font-size: 0.86rem; line-height: 1.75; color: rgba(245,240,234,0.85); font-weight: 300; text-wrap: pretty; }
+  .booking-window p strong { color: var(--ivory); font-weight: 500; }
+  .booking-window .bw-email { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(245,240,234,0.18); }
+  .booking-window .bw-email a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(191,164,106,0.5); padding-bottom: 1px; }
+  .booking-window .bw-email a:hover { border-bottom-color: var(--gold); }
+  .rate-table { border: 1px solid var(--sand); }
+  .rate-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: baseline; padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--sand); }
+  .rate-row:last-child { border-bottom: none; }
+  .rate-row .rt-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--charcoal); }
+  .rate-row .rt-name a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 1px; transition: color 0.2s, border-color 0.2s; }
+  .rate-row .rt-name a:hover { color: var(--gold); }
+  .rate-row .rt-name span { display: block; font-family: inherit; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--gold); text-transform: uppercase; margin-top: 0.25rem; }
+  .rate-row .rt-price { text-align: right; white-space: nowrap; }
+  .rate-row .rt-php { font-size: 1.05rem; color: var(--deep-teal); font-weight: 500; }
+  .rate-row .rt-usd { display: block; font-size: 0.78rem; color: var(--stone); margin-top: 0.2rem; }
+  .rate-note { font-size: 0.78rem; color: var(--stone); margin-top: 1.25rem; line-height: 1.7; text-wrap: pretty; }
+
+  .travel-steps { margin-bottom: 4rem; }
+  .travel-steps h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; margin-bottom: 2rem; color: var(--charcoal); }
+  .steps-list { display: flex; flex-direction: column; }
+  .step-item { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; padding: 1.5rem 0; border-bottom: 1px solid var(--sand); align-items: start; }
+  .step-item:last-child { border-bottom: none; }
+  .step-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--sand); line-height: 1; }
+  .step-text h5 { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--charcoal); margin-bottom: 0.4rem; }
+  .step-text p { font-size: 0.88rem; line-height: 1.7; color: #6a6a62; font-weight: 300; text-wrap: pretty; }
+
+  .directions-link { display: grid; grid-template-columns: 130px 1fr auto; gap: 1.5rem; align-items: center; padding: 2rem 0 0.5rem; margin-top: 1rem; border-top: 1px solid var(--sand); }
+  .directions-label { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); line-height: 1.4; }
+  .directions-link p { font-size: 0.82rem; line-height: 1.65; color: #6a6a62; font-weight: 300; text-wrap: pretty; margin: 0; }
+  .directions-cta { font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 0.4rem; white-space: nowrap; transition: color 0.2s; }
+  .directions-cta:hover { color: var(--gold); }
+  @media (max-width: 720px) { .directions-link { grid-template-columns: 1fr; gap: 0.75rem; } }
+  .travel-intro { font-size: 0.92rem; line-height: 1.75; color: #5a5a56; font-weight: 300; max-width: 640px; text-wrap: pretty; margin-bottom: 2rem; }
+  .origin-picker { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .origin-picker label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
+  .origin-picker select { font-family: 'Jost', sans-serif; font-size: 0.95rem; color: var(--charcoal); background-color: var(--ivory); border: 1px solid var(--sand); border-bottom: 1.5px solid var(--gold); padding: 0.65rem 2.75rem 0.65rem 1rem; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23bfa46a' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; cursor: pointer; }
+  .origin-picker select:focus { outline: none; border-color: var(--gold); }
+  .origin-picker input { font-family: 'Jost', sans-serif; font-size: 0.95rem; color: var(--charcoal); background-color: var(--ivory); border: 1px solid var(--sand); border-bottom: 1.5px solid var(--gold); padding: 0.65rem 1rem; min-width: 280px; max-width: 100%; }
+  .origin-picker input:focus { outline: none; border-color: var(--gold); }
+  .origin-picker input::placeholder { color: var(--stone); }
+
+  .route-viz { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 0.5rem; padding: 2.25rem 1.5rem; background: var(--ivory); border: 1px solid var(--sand); margin-bottom: 1.5rem; }
+  .route-node { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; min-width: 60px; }
+  .route-code { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 500; letter-spacing: 0.03em; color: var(--charcoal); width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--sand); border-radius: 50%; background: #fff; }
+  .route-node.dest .route-code { background: var(--deep-teal); color: var(--ivory); border-color: var(--deep-teal); }
+  .route-city { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); white-space: nowrap; }
+  .route-seg { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; flex: 1 1 56px; min-width: 56px; max-width: 130px; padding-top: 0.85rem; }
+  .route-seg::before { content: ''; display: block; width: 100%; height: 1px; background: repeating-linear-gradient(to right, var(--gold) 0 5px, transparent 5px 11px); }
+  .route-icon { font-size: 0.95rem; color: var(--gold); line-height: 1; }
+  .route-time { font-size: 0.6rem; letter-spacing: 0.04em; color: #6a6a62; white-space: nowrap; }
+
+  .travel-total { display: flex; flex-direction: column; gap: 0.3rem; padding: 1.5rem 2rem; background: var(--sand); margin-bottom: 3rem; text-align: center; }
+  .travel-total .tt-label { font-size: 0.66rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
+  .travel-total .tt-value { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 300; color: var(--charcoal); line-height: 1.1; }
+  .travel-total .tt-note { font-size: 0.74rem; color: #6a6a62; line-height: 1.6; text-wrap: pretty; max-width: 460px; margin: 0 auto; }
+  @media (max-width: 560px) { .route-seg::before { display: none; } .route-seg { flex-basis: auto; padding-top: 0; } .route-viz { gap: 0.75rem 0.5rem; } }
+
+  .reserve-cta { background: var(--sand); padding: 2.5rem; text-align: center; margin-bottom: 4rem; }
+  .reserve-cta p { font-size: 0.88rem; line-height: 1.8; color: var(--charcoal); margin-bottom: 1rem; font-weight: 300; text-wrap: pretty; }
+  .reserve-cta .deadline { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: #b03030; margin: 0.75rem 0; letter-spacing: 0.03em; }
+  .cta-btn { display: inline-block; background: var(--charcoal); color: var(--ivory); padding: 0.85rem 2rem; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; text-decoration: none; transition: background 0.2s; margin-top: 0.5rem; }
+  .cta-btn:hover { background: var(--deep-teal); }
+
+  /* ── GALLERY ── */
+  #page-gallery {
+    background-image: linear-gradient(rgba(20,30,28,0.55), rgba(20,30,28,0.55)), url('assets/gallery-bg.jpg');
+    background-size: cover; background-position: center; background-attachment: fixed;
+  }
+  .gallery-header { background: transparent; padding: 5rem 2rem 3rem; text-align: center; }
+  .gallery-header h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; color: var(--ivory); letter-spacing: 0.06em; margin-bottom: 0.75rem; text-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+  .gallery-header p { font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,242,235,0.78); text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
+
+  .gallery-grid {
+    column-count: 2; column-gap: 44px;
+    padding: 2.5rem clamp(2rem, 5vw, 5rem) clamp(2.5rem, 6vw, 6rem);
+    background: transparent;
+  }
+  @media (max-width: 700px) { .gallery-grid { column-count: 1; column-gap: 16px; } }
+  .gallery-item {
+    overflow: hidden; cursor: pointer; position: relative;
+    background: transparent;
+    break-inside: avoid;
+    margin-bottom: 24px;
+    transition: transform 0.5s ease;
+  }
+  .gallery-item:hover { transform: translateY(-4px); }
+  .gallery-item img { width: calc(100% - 30px); margin: 0 auto; height: auto; display: block; transition: transform 0.6s ease; }
+  .gallery-item:hover img { transform: scale(1.03); }
+  .gallery-item::after { content: ''; position: absolute; inset: 0; background: rgba(44,44,42,0); transition: background 0.3s; pointer-events: none; }
+  .gallery-item:hover::after { background: rgba(44,44,42,0.12); }
+
+  /* lightbox */
+  #lightbox { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; }
+  #lightbox.open { display: flex; }
+  #lightbox img { max-width: 92%; max-height: 88vh; object-fit: contain; border: 1px solid rgba(255,255,255,0.08); }
+  .lb-close { position: absolute; top: 1.5rem; right: 2rem; color: var(--stone); font-size: 0.8rem; cursor: pointer; background: none; border: none; letter-spacing: 0.1em; text-transform: uppercase; }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--stone); font-size: 2rem; cursor: pointer; padding: 1rem; transition: color 0.2s; }
+  .lb-nav:hover { color: var(--ivory); }
+  .lb-prev { left: 1rem; } .lb-next { right: 1rem; }
+
+  /* ── RSVP ── */
+  .rsvp-hero { background: var(--charcoal); padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  .rsvp-hero::before { content: ''; position: absolute; inset: 0; background-image: var(--rsvp-img); background-size: cover; background-position: center 42%; opacity: 0.32; }
+  .rsvp-hero-text { position: relative; z-index: 1; }
+  .rsvp-hero h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; color: var(--ivory); letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .rsvp-hero p { font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--stone); }
+
+  .rsvp-body { max-width: 640px; margin: 0 auto; padding: 5rem 2rem; }
+  .rsvp-deadline { background: var(--sand); padding: 1.25rem 2rem; text-align: center; margin-bottom: 3rem; font-size: 0.85rem; color: var(--charcoal); line-height: 1.7; }
+  .rsvp-deadline strong { font-weight: 500; }
+
+  .form-group { margin-bottom: 1.75rem; }
+  .form-label { display: block; font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--stone); margin-bottom: 0.6rem; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 0.8rem 0;
+    background: transparent; border: none; border-bottom: 1px solid var(--sand);
+    color: var(--charcoal); font-family: 'Jost', sans-serif; font-size: 0.95rem;
+    outline: none; transition: border-bottom-color 0.2s; border-radius: 0;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-bottom-color: var(--deep-teal); }
+  .form-textarea { resize: none; height: 80px; }
+
+  .radio-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .radio-option {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 1.1rem; border: 1px solid var(--sand);
+    cursor: pointer; transition: all 0.2s;
+    font-size: 0.85rem; color: var(--charcoal);
+    background: transparent;
+  }
+  .radio-option input { display: none; }
+  .radio-option:hover { border-color: var(--gold); }
+  .radio-option.selected { border-color: var(--deep-teal); background: rgba(74,123,118,0.08); color: var(--deep-teal); }
+
+  .submit-btn {
+    width: 100%; background: var(--charcoal); color: var(--ivory);
+    border: none; padding: 1rem; margin-top: 1rem;
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .submit-btn:hover { background: var(--deep-teal); }
+
+  .rsvp-success { display: none; text-align: center; padding: 3rem 1rem; }
+
+  .rsvp-message { max-width: 620px; margin: 0 auto; text-align: center; padding: 1rem 0 2rem; }
+  .rsvp-message .rsvp-date-label { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+  .rsvp-message .rsvp-date { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 3.4rem); font-weight: 300; color: var(--charcoal); letter-spacing: 0.02em; margin: 0.6rem 0 2rem; }
+  .rsvp-message .rsvp-date::after { content: ''; display: block; width: 60px; height: 1px; background: var(--gold); margin: 1.5rem auto 0; }
+  .rsvp-message p { font-size: 1rem; line-height: 1.9; color: #5a5a56; font-weight: 300; text-wrap: pretty; }
+  .rsvp-message p strong { color: var(--charcoal); font-weight: 500; }
+  .rsvp-success h3 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--deep-teal); }
+  .rsvp-success p { font-size: 0.95rem; color: #5a5a56; line-height: 1.8; margin-top: 0.5rem; font-weight: 300; text-wrap: pretty; }
+
+  /* ── REGISTRY ── */
+  .registry-header { background: var(--ivory); padding: 5rem 2rem; text-align: center; }
+  .registry-header h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; color: var(--charcoal); letter-spacing: 0.06em; margin-bottom: 1rem; }
+  .registry-header p { font-size: 0.95rem; line-height: 1.8; color: #5a5a56; max-width: 580px; margin: 0 auto; font-weight: 300; text-wrap: pretty; }
+
+  .registry-body { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 6rem; text-align: center; }
+  .registry-note .quote {
+    display: block; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 1.6rem; color: var(--deep-teal); margin-bottom: 1.25rem;
+  }
+  .registry-note p { font-size: 0.95rem; line-height: 1.85; color: #5a5a56; font-weight: 300; max-width: 560px; margin: 0 auto; text-wrap: pretty; }
+  .registry-coming-soon {
+    margin-top: 3rem; padding: 3rem; background: var(--sand);
+    font-size: 0.9rem; color: var(--charcoal); line-height: 1.6;
+  }
+  .registry-link {
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem; letter-spacing: 0.04em;
+    color: var(--ivory); background: var(--deep-teal);
+    padding: 1rem 2.5rem; text-decoration: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .registry-link:hover { background: var(--charcoal); transform: translateY(-2px); }
+
+  /* ── FAQ ── */
+  .faq-header { background: var(--charcoal); padding: 5rem 2rem; text-align: center; }
+  .faq-header h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; color: var(--ivory); letter-spacing: 0.06em; }
+
+  .faq-body { max-width: 800px; margin: 0 auto; padding: 5rem 2rem; }
+  .faq-item { border-bottom: 1px solid var(--sand); }
+  .faq-q {
+    width: 100%; background: none; border: none;
+    padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400;
+    color: var(--charcoal); text-align: left; cursor: pointer; gap: 1rem;
+  }
+  .faq-icon { font-size: 1.25rem; color: var(--gold); transition: transform 0.3s; font-family: 'Jost', sans-serif; flex-shrink: 0; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .faq-item.open .faq-a { max-height: 500px; }
+  .faq-a p { padding: 0 0 1.5rem; font-size: 0.92rem; line-height: 1.85; color: #5a5a56; font-weight: 300; text-wrap: pretty; }
+  .faq-a a { color: var(--deep-teal); }
+
+  /* ── FOOTER ── */
+  footer { background: var(--charcoal); padding: 4rem 2rem; text-align: center; color: var(--stone); }
+  .footer-names { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; color: var(--ivory); margin-bottom: 1rem; }
+  .footer-divider { width: 40px; height: 1px; background: var(--gold); margin: 0 auto 1rem; }
+  footer p { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- SITE -->
+<div id="site">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" onclick="showPage('home')" href="#">E &amp; B</a>
+    <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navlinks">
+      <li><a href="#" onclick="showPage('home')" data-page="home" class="active">Home</a></li>
+      <li><a href="#" onclick="showPage('schedule')" data-page="schedule">Schedule</a></li>
+      <li><a href="#" onclick="showPage('story')" data-page="story">Our Story</a></li>
+      <li><a href="#" onclick="showPage('travel')" data-page="travel">Travel &amp; Stay</a></li>
+      <li><a href="#" onclick="showPage('gallery')" data-page="gallery">Gallery</a></li>
+      <li><a href="#" onclick="showPage('rsvp')" data-page="rsvp">RSVP</a></li>
+      <li><a href="#" onclick="showPage('registry')" data-page="registry">Registry</a></li>
+      <li><a href="#" onclick="showPage('faq')" data-page="faq">FAQ</a></li>
+    </ul>
+    <span class="nav-date">Jan 29, 2027</span>
+  </div>
+</nav>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-text">
+      <h1 class="hero-title" style="height: 212px">Emily<br><em>&amp; Bruce</em></h1>
+      <p class="hero-date" style="height: 30px; font-size: 14px">Friday, January 29, 2027</p>
+      <p class="hero-eyebrow" style="margin-top: 1rem; margin-bottom: 0; height: 26px;"><a href="https://www.shangri-la.com/boracay/boracayresort/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; font-weight: 600">Shangri-La Boracay</a> &middot; Philippines</p>
+    </div>
+  </div>
+
+  <div class="countdown-section">
+    <p class="countdown-label">Days until we say I do</p>
+    <div class="countdown-grid">
+      <div class="countdown-item"><span class="countdown-num" id="cd-days">000</span><span class="countdown-unit">Days</span></div>
+      <span class="countdown-sep">&middot;</span>
+      <div class="countdown-item"><span class="countdown-num" id="cd-hours">00</span><span class="countdown-unit">Hours</span></div>
+      <span class="countdown-sep">&middot;</span>
+      <div class="countdown-item"><span class="countdown-num" id="cd-mins">00</span><span class="countdown-unit">Minutes</span></div>
+    </div>
+  </div>
+
+  <div class="story-section">
+    <div class="story-img"></div>
+    <div class="story-content">
+      <p class="section-eyebrow">With Gratitude</p>
+      <h2 class="section-title">We can&rsquo;t wait to
+<em>celebrate with you</em></h2>
+      <div class="divider"></div>
+      <p class="section-body">Thank you for making the journey to be part of our wedding &mdash; it means the world to us. We&rsquo;re so excited to have you with us as we celebrate at Boracay, our favorite place in the world.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ SCHEDULE ══════════ -->
+<div id="page-schedule" class="page">
+  <div class="schedule-hero">
+    <div class="schedule-hero-text">
+      <h2>The Weekend</h2>
+      <p>January 27 &ndash; 29, 2027</p>
+    </div>
+  </div>
+
+  <div class="schedule-body">
+    <div class="day-block reveal">
+      <div class="day-header">
+        <div class="day-number">27</div>
+        <div class="day-info">
+          <div class="day-date">Wednesday, January 27</div>
+          <div class="day-label">RECOMMENDED ARRIVAL DAY</div>
+          <div class="day-dress"><span class="mini"><i style="background:#ec7157"></i><i style="background:#eeb04e"></i><i style="background:#c9401a"></i></span> Warm sunset tones</div>
+        </div>
+      </div>
+      <div class="event-list">
+        <div class="event-item">
+          <div class="event-time">All Day</div>
+          <div class="event-details">
+            <div class="event-name">Check-In at Shangri-La Boracay</div>
+            <div class="event-location">Front Desk, Barangay Yapak</div>
+            <div class="event-note">Check-in begins at 2:00 PM. Speedboat transfers from Caticlan are included with your room booking.</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">2--6 PM</div>
+          <div class="event-details">
+            <div class="event-name">Sunset Booze Cruise </div>
+            <div class="event-location">TRANSPORTATION FROM RESORT TO STATION 1 PROVIDED</div>
+            <div class="event-note">Drinks, good company, and the most breathtaking views Boracay has to offer provided by the couple. Please see Dress Code below for guidance on what to wear.</div>
+            <span class="event-badge">Pre-Wedding Event</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-block reveal">
+      <div class="day-header">
+        <div class="day-number">28</div>
+        <div class="day-info">
+          <div class="day-date">Thursday, January 28</div>
+          <div class="day-label">Welcome Day</div>
+          <div class="day-dress">Tropical cocktail &middot; open, vibrant palette</div>
+        </div>
+      </div>
+      <div class="event-list">
+        <div class="event-item">
+          <div class="event-time">Morning</div>
+          <div class="event-details">
+            <div class="event-name">Free Time on the Island</div>
+            <div class="event-location">Resort Amenities &amp; Boracay</div>
+            <div class="event-note">Enjoy the resort&rsquo;s world-class facilities &mdash; pools, beach, spa, watersports. Or venture out to explore Boracay&rsquo;s famous shores and local eateries.</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">7:00pm</div>
+          <div class="event-details">
+            <div class="event-name">Welcome Drinks </div>
+            <div class="event-location">YOGA GARDEN- SHANGRI-LA BORACAY</div>
+            <div class="event-note">The night before the big day! Join us for welcome cocktails, meet the wedding party, and toast to what&rsquo;s ahead. Details to be confirmed &mdash; watch your inbox.</div>
+            <span class="event-badge">Pre-Wedding Event</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-block reveal">
+      <div class="day-header">
+        <div class="day-number">29</div>
+        <div class="day-info">
+          <div class="day-date">Friday, January 29</div>
+          <div class="day-label">✦ Wedding Day ✦</div>
+          <div class="day-dress"><span class="mini"><i style="background:#9fa077"></i><i style="background:#a69656"></i><i style="background:#8a5b39"></i></span> Earthy, sun-drenched tones</div>
+        </div>
+      </div>
+      <div class="event-list">
+        <div class="event-item">
+          <div class="event-time">4:00 PM</div>
+          <div class="event-details">
+            <div class="event-name">Wedding Ceremony</div>
+            <div class="event-location">Alon Garden &middot; Outdoor</div>
+            <div class="event-note">Please be seated by 3:45 PM. The ceremony will take place in the Alon Garden. In the unlikely event of rain, the resort will arrange a beautiful indoor alternative.</div>
+            <span class="event-badge">Ceremony</span>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">5:00 PM</div>
+          <div class="event-details">
+            <div class="event-name">Cocktail Hour</div>
+            <div class="event-location">Cielo Arena</div>
+            <div class="event-note">Celebrate with passed bites, signature cocktails, and the golden hour light. Photos and toasts with the newlyweds to follow the ceremony.</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">6:00 PM</div>
+          <div class="event-details">
+            <div class="event-name">Dinner &amp; Reception</div>
+            <div class="event-location">Sagana Ballroom</div>
+            <div class="event-note">Dinner, dancing, and a night you won’t forget. The reception runs until 11:00 PM.</div>
+            <span class="event-badge">Reception</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dress-guide reveal">
+      <div class="dress-guide-head">
+        <h3>Dress Code</h3>
+        <p class="dg-sub">Three Days &middot; Three Celebrations</p>
+        <p class="dg-intro">We want you to look and feel your best across all three days. Here&rsquo;s a guide for each event &mdash; and a little inspiration for the vibe we&rsquo;re going for.</p>
+      </div>
+      <div class="dress-days">
+
+        <div class="dress-day">
+          <div class="dd-body">
+            <span class="dd-day">Day 1</span>
+            <h4>Sunset Booze Cruise</h4>
+            <span class="dd-date">January 27</span>
+            <p class="dd-desc">Lean into the sunset. Think warm tones, and dress comfortably — you’ll be on a boat and will be jumping into the water. Sundresses, linen sets, and resort wear are perfect.Be prepared to get Wet and Wild!
+
+</p>
+            <div class="dd-palette">
+              <span class="dd-sw"><i style="background:#ec7157"></i><span>Coral</span></span>
+              <span class="dd-sw"><i style="background:#eb7637"></i><span>Orange</span></span>
+              <span class="dd-sw"><i style="background:#eeb04e"></i><span>Gold</span></span>
+              <span class="dd-sw"><i style="background:#eec5a7"></i><span>Blush</span></span>
+              <span class="dd-sw"><i style="background:#c9401a"></i><span>Rust</span></span>
+              <span class="dd-sw"><i style="background:#b13e28"></i><span>Red</span></span>
+            </div>
+          </div>
+          <div class="dd-figure"><img src="assets/dress/dress-day1.png?v=3" alt="Sunset booze cruise looks in warm-toned resort wear"></div>
+        </div>
+
+        <div class="dress-day">
+          <div class="dd-body">
+            <span class="dd-day">Day 2</span>
+            <h4>Welcome Drinks</h4>
+            <span class="dd-date">January 28</span>
+            <p class="dd-desc">Elevated tropical cocktail attire &mdash; relaxed but polished, no ties required. For men, a linen shirt with linen trousers and loafers, or a collared shirt with dress pants. For women, a cocktail dress, a stylish two-piece, or a flowy midi.</p>
+            <p class="dd-open">Open palette &mdash; light fabrics &amp; vibrant colors encouraged.</p>
+          </div>
+          <div class="dd-figure"><img src="assets/dress/dress-day2.png?v=3" alt="Welcome drinks looks in elevated tropical cocktail attire"></div>
+        </div>
+
+        <div class="dress-day">
+          <div class="dd-body">
+            <span class="dd-day">Day 3</span>
+            <h4>Wedding Day</h4>
+            <span class="dd-date">January 29</span>
+            <p class="dd-desc">Formal tropical attire in earthy, sun-drenched shades &mdash; like a garden at golden hour. For men, a suit or dress shirt and trousers in these tones. For women, a formal gown or elegant cocktail dress in our palette. Ties welcome &mdash; black ties are fine.</p>
+            <div class="dd-palette">
+              <span class="dd-sw"><i style="background:#9fa077"></i><span>Sage</span></span>
+              <span class="dd-sw"><i style="background:#a69656"></i><span>Olive</span></span>
+              <span class="dd-sw"><i style="background:#6e6c3a"></i><span>Green</span></span>
+              <span class="dd-sw"><i style="background:#f6d993"></i><span>Muted Yellow</span></span>
+              <span class="dd-sw"><i style="background:#c4a370"></i><span>Warm Tan</span></span>
+              <span class="dd-sw"><i style="background:#8a5b39"></i><span>Brown</span></span>
+            </div>
+            <p class="dd-note">Please avoid ivory &amp; white out of respect for the bride &mdash; and kindly no black dress or black suit.</p>
+          </div>
+          <div class="dd-figure"><img src="assets/dress/dress-day3.png?v=3" alt="Wedding day looks in formal tropical attire"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TRAVEL ══════════ -->
+<div id="page-travel" class="page">
+  <div class="travel-hero">
+    <div class="travel-hero-text"><h2>Travel &amp; Stay</h2></div>
+  </div>
+
+  <div class="travel-body">
+    <div class="travel-steps reveal">
+      <h3>Getting to Shangri-La Boracay</h3>
+      <p class="travel-intro">Most guests are flying in from abroad, so plan on two flights &mdash; into Manila first, then a short hop to Caticlan, the airport closest to the island. Tell us where you&rsquo;re starting and we&rsquo;ll map out the journey and rough travel time.</p>
+
+      <div class="origin-picker">
+        <label for="origin-input">Flying from</label>
+        <input id="origin-input" list="airport-list" placeholder="Type a city or airport code…" autocomplete="off" spellcheck="false" onchange="onOriginInput(this.value)">
+        <datalist id="airport-list"></datalist>
+      </div>
+
+      <div class="route-viz" id="route-viz"></div>
+
+      <div class="travel-total" id="travel-total"></div>
+
+      <div class="steps-list" id="steps-list">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-text">
+            <h5 id="step1-title">Fly to Manila (MNL)</h5>
+            <p id="step1-text"></p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-text">
+            <h5>Connect to Caticlan (MPH)</h5>
+            <p>A roughly one-hour Philippine Airlines flight from Manila to Caticlan — the airport closest to the resort, and the only one you’ll need. Please allow at least 4 hours between landing in Manila and this flight to clear immigration, collect your bags, and change terminals.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-text">
+            <h5>Resort Transfer &middot; Van &amp; Speedboat</h5>
+            <p>Once you clear Caticlan arrivals, the Shangri-La team meets you at their dedicated counter &mdash; a short van ride to the jetty, then a private speedboat (about fifteen minutes) around the headland to the cove. All included; simply send the resort your flight details ahead of time.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="directions-link">
+        <div class="directions-label">Resort Directions</div>
+        <p>For the most precise details &mdash; maps, exact transfer times, and the latest flight options &mdash; see the official directions page on the Shangri-La Boracay website.</p>
+        <a href="https://www.shangri-la.com/boracay/boracayresort/about/map-directions/" target="_blank" rel="noopener" class="directions-cta">Shangri-La Directions Page &nbsp;&rarr;</a>
+      </div>
+    </div>
+
+    <div class="rooms-rates reveal">
+      <div class="stay-callout">
+      <div class="stay-icon">
+</div>
+      <div>
+        <h3>We strongly encourage all guests to stay on-property at <a href="https://www.shangri-la.com/boracay/boracayresort/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px;">Shangri-La Boracay</a></h3>
+        <p>The resort is an all-encompassing paradise, and staying on-site means you won’t miss a single moment of the weekend. We’ve secured a special wedding rate on rooms at the resort — see the rates and booking window just below. To reserve, email the resort’s reservations team at the address listed below.</p>
+        <div class="stay-perks">
+          <span class="perk-pill">✓ Steps from All Events</span>
+          <span class="perk-pill">✓ Pool &amp; Spa Access</span>
+          <span class="perk-pill">✓ Private Beach</span>
+          <span class="perk-pill">✓ No Transport Stress</span>
+        </div>
+      </div>
+    </div>
+
+      <h3 style="margin-top:3rem;">Rooms &amp; Rates</h3>
+      <div class="booking-window">
+        <div class="bw-label">When you can book the guest rate</div>
+        <div class="bw-dates">January 26 &ndash; February 1, 2027</div>
+        <p>Our wedding group rate applies to every room type below, for stays from three days before through three days after the wedding on January 29 — so you’re free to arrive early and linger after. Please reserve on or before November 30, 2026; after that date, any unbooked rooms are released to the public at standard rates.</p>
+        <p class="bw-email">To reserve, email the resort&rsquo;s reservations team at <a href="mailto:reservations.slbo@shangri-la.com?subject=Malec%20Miranda%20Wedding">reservations.slbo@shangri-la.com</a> and mention the <strong>Malec Miranda Wedding</strong>.</p>
+      </div>
+      <div class="rate-table">
+        <div class="rate-row">
+          <div class="rt-name"><a href="https://www.shangri-la.com/boracay/boracayresort/rooms-suites/rooms/deluxe-room/" target="_blank" rel="noopener">Deluxe Room</a></div>
+          <div class="rt-price"><span class="rt-php">&#8369;23,284.50</span><span class="rt-usd usd" data-php="23284.50"></span></div>
+        </div>
+        <div class="rate-row">
+          <div class="rt-name"><a href="https://www.shangri-la.com/boracay/boracayresort/rooms-suites/rooms/deluxe-seaview-room/" target="_blank" rel="noopener">Deluxe Seaview</a></div>
+          <div class="rt-price"><span class="rt-php">&#8369;25,735.50</span><span class="rt-usd usd" data-php="25735.50"></span></div>
+        </div>
+        <div class="rate-row">
+          <div class="rt-name"><a href="https://www.shangri-la.com/boracay/boracayresort/rooms-suites/rooms/premier-seaview-room/" target="_blank" rel="noopener">Premier Seaview</a></div>
+          <div class="rt-price"><span class="rt-php">&#8369;28,186.50</span><span class="rt-usd usd" data-php="28186.50"></span></div>
+        </div>
+        <div class="rate-row">
+          <div class="rt-name"><a href="https://www.shangri-la.com/boracay/boracayresort/rooms-suites/rooms/premier-family-seaview-room/" target="_blank" rel="noopener">Premier Family</a></div>
+          <div class="rt-price"><span class="rt-php">&#8369;30,637.50</span><span class="rt-usd usd" data-php="30637.50"></span></div>
+        </div>
+        <div class="rate-row">
+          <div class="rt-name"><a href="https://www.shangri-la.com/boracay/boracayresort/rooms-suites/suites/seaview-suite/" target="_blank" rel="noopener">Seaview Suite</a></div>
+          <div class="rt-price"><span class="rt-php">&#8369;44,730.75</span><span class="rt-usd usd" data-php="44730.75"></span></div>
+        </div>
+      </div>
+      <p class="rate-note">Per room, per night &mdash; all taxes &amp; service charges included. Rates include roundtrip land &amp; speedboat transfers from Caticlan and daily breakfast (2 adults + 2 children), Wi-Fi, and full use of the pools, beach &amp; health club. A &#8369;300 island terminal fee per guest is collected at check-out.</p>
+      <p class="rate-note" style="margin-top:0.5rem;"><span id="fx-asof">USD shown exchange rate — ₱1 ≈ $0.0165, updated Jun 19, 2026. Peso rates above are exact; settle in pesos at the resort.</span> &nbsp;Tap any room name to see photos and details on the resort&rsquo;s site.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ OUR STORY ══════════ -->
+<div id="page-story" class="page" data-screen-label="Our Story">
+  <div class="story-page-hero">
+    <div class="story-page-hero-text">
+      <p class="eyebrow" style="font-weight: 700">EMILY &amp; BRUCE 
+EST 2016
+</p>
+      <h2>Our <em>Story</em></h2>
+    </div>
+  </div>
+
+  <div class="story-intro reveal">
+    <span class="signoff">Our story, year by year</span>
+  </div>
+
+  <div class="story-timeline">
+    <div class="timeline-rule reveal">
+      <span class="line"></span>
+      <span class="label">2016 &mdash; 2026</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>16</em></div>
+        <span class="yr-tag">How it started</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2016/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2016/02.png'); background-position:center 38%;"></div>
+        </div>
+        <p class="year-caption">Dec '16 the DMs flew and by New Year's Eve, we already knew</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>17</em></div>
+        <span class="yr-tag">Year One</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos two-rows">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2017/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2017/thailand.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2017/usc.png'); background-position:center 18%;"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2017/03.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2017/04.png');"></div>
+        </div>
+        <p class="year-caption">The year we both got into our dream schools and decided it was going to be a lifelong rivalry started (USC vs UCLA). The year it stopped being new and started being us.</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>18</em></div>
+        <span class="yr-tag">Year Two</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2018/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2018/02.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2018/dinner.png');"></div>
+        </div>
+        <p class="year-caption">Starting the final year of college with more Gamedays and exploring dinner spots in our new home in LA.</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>19</em></div>
+        <span class="yr-tag">Year Three</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2019/01.png'); background-position:center 22%;"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2019/driftwood.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2019/02.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2019/danapoint.png'); background-position:center 30%;"></div>
+        </div>
+        <p class="year-caption">The year we both graduated and started our adult lives together.</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>20</em></div>
+        <span class="yr-tag">Year Four</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2020/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2020/boat.png'); background-position:center 40%;"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2020/waterfall.png'); background-position:center 55%;"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2020/tidepool.png'); background-position:right center;"></div>
+        </div>
+        <p class="year-caption">The year the world went quiet, but our love grew even louder. We made the best of our COVID year working full-time for the first time and exploring new experiences in places other than Irvine.
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>21</em></div>
+        <span class="yr-tag">Year Five &middot; Long distance</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2021/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2021/calabra.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2021/02.png');"></div>
+        </div>
+        <p class="year-caption">The year we started our long- / not-so-long distance journey as Emily started her graduate programs at Emory University (shoutout to all the ATL Baddies). Even through we were on opposite sides of the country, we never felt like we were too far away from each other. Our bestie Oreo became our favorite pup while fostering him.</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>22</em></div>
+        <span class="yr-tag">Year Six</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2022/02.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2022/03.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2022/04.png');"></div>
+        </div>
+        <p class="year-caption">Long-distance, but you'd never know it — Coachella in the Spring, Emily becomes a RN in the Summer and starts her NP program in the Fall. Bruce continues to slave away, building his career as best he could! Long distance is almost over!</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>23</em></div>
+        <span class="yr-tag">Year Seven &middot; <strong style="color:var(--gold)">MSN</strong></span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2023/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2023/02.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2023/03.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2023/04.png');"></div>
+        </div>
+        <p class="year-caption">Emily becomes a Nurse Practitioner— the end of a long, hard, deeply earned chapter at Emory. Wow! Bruce is so supportive! We celebrated under the Atlanta skyline, then celebrated our reunion n Oahu. </p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>24</em></div>
+        <span class="yr-tag">Year Eight &middot; <strong style="color:var(--gold)">She said yes</strong></span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <span class="milestone">May 4, 2024 &middot; The Proposal</span>
+        <div class="year-photos">
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2024/proposal-beach.png'); background-position:center center;"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2024/proposal-bw.png'); background-position:center center;"></div>
+        </div>
+        <div class="year-photos">
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2024/duluth.png');"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2024/laniakea.png'); background-position:center 40%;"></div>
+          <div class="ph" data-ar="wide" style="background-image:url('assets/story/2024/stedward.png'); background-position:center 65%;"></div>
+        </div>
+        <p class="year-caption">A ring on a beach in May &mdash; the happiest day of our lives &mdash; where we let ourselves start dreaming of our special day. First year back together full time and we couldn't be happier.
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>25</em></div>
+        <span class="yr-tag">Year Nine &middot; The road here</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <div class="year-photos two-rows">
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/01.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/02.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/03.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/04.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/05.png');"></div>
+          <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2025/06.png');"></div>
+        </div>
+        <p class="year-caption">Spring in Tokyo then our first days on Boracay — the trip that chose our island. A summer full of amazing weddings all across the country, Mexico and Puerto Rico included!</p>
+      </div>
+    </div>
+
+    <div class="year-block reveal">
+      <div class="year-label">
+        <div class="yr">20<em>26</em></div>
+        <span class="yr-tag">Year Ten &middot; Almost there</span>
+        <div class="yr-rule"></div>
+      </div>
+      <div class="year-content">
+        <p class="year-caption" style="margin-bottom:0.5rem;">Our last full year as fianc&eacute;s &mdash; snow in Utah and many Mammoth trips, dust at Stagecoach, and a trip to Boracay where we met our planner and finally saw it all come together.</p>
+
+        <div class="story-moment">
+          <div class="moment-label"><span>Japan</span><span class="mo-when">January &middot; Winter</span><span class="mo-line"></span></div>
+          <div class="year-photos">
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/01.png');"></div>
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/japan-snow.png');"></div>
+          </div>
+          <p class="moment-caption">Back to Japan and Philippines to start the year — Utah and Mammoth snow for the winter.</p>
+        </div>
+
+        <div class="story-moment">
+          <div class="moment-label"><span>Stagecoach</span><span class="mo-when">April &middot; Indio</span><span class="mo-line"></span></div>
+          <div class="year-photos">
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/stagecoach-selfie.png');"></div>
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/stagecoach-fest.png');"></div>
+          </div>
+          <p class="moment-caption">Cowboy hats and a whole lot of country in the desert — YEEHAW!</p>
+        </div>
+
+        <div class="story-moment">
+          <div class="moment-label"><span>Boracay &middot; The planner &amp; the shoot</span><span class="mo-when">March</span><span class="mo-line"></span></div>
+          <div class="year-photos two-rows">
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/eng-koi.png'); background-position:center 15%;"></div>
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/eng-sand.png'); background-position:center 28%;"></div>
+            <div class="ph" data-ar="portrait" style="background-image:url('assets/story/2026/eng-pond.png'); background-position:center 46%;"></div>
+          </div>
+          <p class="moment-caption">We flew to Boracay, met our wedding planner, and walked the grounds where we'll say I do — then spent golden hour on the beach for our engagement shoot. Damn near ten years, and counting down to January 29, 2027.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="story-cta">
+    <h3>And the next <em>chapter</em></h3>
+    <p>Begins on January 29, 2027, on a beach in Boracay &mdash; with all of you. See the full gallery for more.</p>
+    <a href="#" onclick="showPage('gallery'); return false;" class="cta-btn">View the Gallery &nbsp;&rarr;</a>
+  </div>
+</div>
+
+<!-- ══════════ GALLERY ══════════ -->
+<div id="page-gallery" class="page">
+  <div class="gallery-header">
+    <h2 style="font-size: 70px; opacity: 1">Gallery</h2>
+    <p style="font-size: 14px">Engagement photos &middot; Boracay, Philippines</p>
+  </div>
+  <div class="gallery-grid" id="galleryGrid"></div>
+</div>
+
+<div id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">✕ Close</button>
+  <button class="lb-nav lb-prev" onclick="lbNav(-1)" aria-label="Previous">&#8592;</button>
+  <img id="lb-img" alt="Photo">
+  <button class="lb-nav lb-next" onclick="lbNav(1)" aria-label="Next">&#8594;</button>
+</div>
+
+<!-- ══════════ RSVP ══════════ -->
+<div id="page-rsvp" class="page">
+  <div class="rsvp-hero">
+    <div class="rsvp-hero-text">
+      <h2>RSVP</h2>
+    </div>
+  </div>
+
+  <div class="rsvp-body">
+    <div class="rsvp-message">
+      <span class="rsvp-date-label">Please respond by</span>
+      <div class="rsvp-date">September 15, 2026</div>
+      <p>We can’t wait to celebrate with you in Boracay. To help us plan every detail, kindly send your response by September 15, 2026.</p>
+      <p style="margin-top:1.5rem;">Our wedding planner, Amanda Tirol, and her team will be reaching out to each of you directly with further information — including travel guidance and everything you'll need for the weekend. Please keep an eye on your inbox.
+If you would like to email her directly, please use boracayweddings@yahoo.com and include "Malec Miranda Wedding" in the subject line so your message gets routed properly.
+</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ REGISTRY ══════════ -->
+<div id="page-registry" class="page">
+  <div class="registry-header">
+    <h2>Registry</h2>
+  </div>
+  <div class="registry-body">
+    <div class="registry-note">
+      <p>Your presence at our wedding is the greatest gift of all. We are so grateful that you&rsquo;re traveling all this way to celebrate with us in Boracay.</p>
+      <p style="margin-top:1.5rem;">If you wish to honor us with a wedding gift, there will be a designated place for gifts on the day of our wedding. Our registry with Crate &amp; Barrel, along with our newlywed fund, can be found below.</p>
+    </div>
+    <div class="registry-coming-soon">
+      <a href="https://www.crateandbarrel.com/gift-registry/emily-malec-and-bruce-miranda/r7428564" target="_blank" rel="noopener" class="registry-link">Crate &amp; Barrel Registry &nbsp;&rarr;</a>
+      <a href="https://www.zola.com/registry/emilyandbruce2027" target="_blank" rel="noopener" class="registry-link" style="display:block;width:fit-content;margin:1.25rem auto 0;">Zola Newlywed Fund &nbsp;&rarr;</a>
+      <span style="font-size:0.75rem;margin-top:1rem;display:block;color:#7a7a72;">Opens in a new tab</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FAQ ══════════ -->
+<div id="page-faq" class="page">
+  <div class="faq-header"><h2>Questions &amp; Answers</h2></div>
+  <div class="faq-body">
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Do we have to stay at Shangri-La Boracay?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>We strongly encourage all guests to stay on-property at Shangri-La Boracay. All wedding events — transportation to the sunset cruise, welcome drinks, ceremony, cocktail hour, and reception — take place at the resort. Staying on-site means zero transport logistics, full access to the property’s exceptional amenities, and the ability to celebrate freely right through to the end of the night. The group rate includes breakfast, roundtrip land and speedboat from Caticlan airport .</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">When should we book our room?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>As soon as possible! The room block cut-off date is <strong>November 30, 2026</strong>. After that date, any unreserved rooms will be released to the public at standard rates, which are significantly higher. Please email reservations.slbo@shangri-la.com and reference the Miranda&ndash;Malec Wedding to access the group rate. Pre-payment is required 120 days before arrival.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What airport should I fly into?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Most guests are flying in internationally, so plan on two flights. First, fly into <strong>Manila (NAIA)</strong>, the Philippines&rsquo; main international gateway. From there, take a short <strong>domestic flight to Caticlan (MPH)</strong>, the airport closest to the island &mdash; allow at least 4 hours between your arrival and your Caticlan flight to clear immigration, collect bags, and transfer terminals. Once you land in Caticlan, the Shangri-La team meets you at their dedicated counter and handles the rest: a brief van ride to the jetty, then a <strong>roundtrip speedboat to the resort</strong> &mdash; which is included in your room rate. Just send the resort your flight details at least 3 days before arrival.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What is the dress code?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>We&rsquo;ve planned three days of celebrations, each with its own dress code &mdash; there&rsquo;s a full visual guide with color palettes on the <strong>Schedule</strong> page. In short:</p>
+        <p style="margin-top:0.75rem;"><strong>Day 1 &middot; Sunset Booze Cruise (Jan 27):</strong> Warm sunset tones &mdash; coral, orange, gold, blush, rust, red. Comfortable resort wear like sundresses and linen sets. You may get in the water, so leave the heels at home.</p>
+        <p style="margin-top:0.75rem;"><strong>Day 2 &middot; Welcome Drinks (Jan 28):</strong> Elevated tropical cocktail attire &mdash; relaxed but polished, no ties required. Light fabrics and vibrant colors encouraged.</p>
+        <p style="margin-top:0.75rem;"><strong>Day 3 &middot; Ceremony &amp; Reception (Jan 29):</strong> Formal tropical attire in earthy, sun-drenched tones &mdash; sage, olive, green, muted yellow, warm tan, and brown. Ties welcome (black ties are fine). Please avoid ivory and white out of respect for the bride, and kindly don&rsquo;t wear a black dress or black suit.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What&rsquo;s the weather like in Boracay in January?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>January is one of the best times to visit Boracay! It falls within the Amihan (northeast monsoon) season, which typically brings warm, sunny days with refreshing sea breezes. Average temperatures are 26&ndash;30°C (79&ndash;86°F). There may be occasional light rain, but prolonged storms are rare. The resort has beautiful indoor backup venues for the ceremony in the unlikely event of heavy rain &mdash; you&rsquo;re in great hands.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Can I extend my stay before or after the wedding?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Yes! The wedding group rate is available for <strong>3 days before and 3 days after January 29, 2027</strong>, subject to availability. Simply request the extended dates when you make your reservation and reference the Miranda&ndash;Malec Wedding. We highly recommend staying a few extra days &mdash; Boracay is truly one of the most beautiful islands in the world.</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Are children welcome?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>We are so grateful for the love and support of our families and friends. As we celebrate this special day in Boracay, we've chosen to make our wedding reception an adults-only evening. This allows us to create an intimate atmosphere where we can truly connect with each guest. We hope you'll understand, and we look forward to celebrating with you!
+</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Will there be transportation between events?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Because all wedding events (with the exception of the sunset cruise) take place within the Shangri-La Boracay resort, there is no transportation needed between venues — which is exactly why we encourage everyone to stay on-property! 
+However, complimentary transportation will be provided for our sunset cruise excursion. The resort will have signage and staff on hand throughout the weekend to guide guests, and we'll communicate all sunset cruise departure details in advance so you know exactly where and when to meet.
+</p></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Who can I contact with questions?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>For questions about the wedding or weekend events, reach out to our wedding planner, Amanda Tirol, at amandatirol@yahoo.com. For room reservations, contact the resort directly at reservations.slbo@shangri-la.com or (036) 288 4988.
+</p></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-names">Emily &amp; Bruce</div>
+  <div class="footer-divider"></div>
+  <p>January 29, 2027 &middot; <a href="https://www.shangri-la.com/boracay/boracayresort/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px;">Shangri-La Boracay</a> &middot; Philippines</p>
+</footer>
+
+</div><!-- end #site -->
+
+<script>
+// ── GALLERY PHOTOS ──
+const GALLERY_PHOTOS = [
+  'assets/gallery/01.jpg',
+  'assets/gallery/02.jpg',
+  'assets/gallery/03.jpg',
+  'assets/gallery/05.jpg',
+  'assets/gallery/06.jpg',
+  'assets/gallery/07.jpg',
+  'assets/gallery/08.jpg',
+  'assets/gallery/09.jpg',
+  'assets/gallery/10.jpg',
+  'assets/gallery/11.jpg',
+  'assets/gallery/12.jpg',
+  'assets/gallery/13.jpg',
+  'assets/gallery/14.jpg',
+  'assets/gallery/15.jpg',
+  'assets/gallery/16.jpg',
+  'assets/gallery/17.jpg',
+  'assets/gallery/18.jpg',
+  'assets/gallery/19.jpg',
+  'assets/gallery/20.jpg'
+];
+const WIDE_INDICES = new Set([0, 7]); // gallery items spanning 2 cols
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  startCountdown();
+  buildGallery();
+  initReveal();
+});
+
+// ── NAV ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('data-page') === name);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById('navlinks').classList.remove('open');
+  initReveal();
+  return false;
+}
+function toggleNav() {
+  document.getElementById('navlinks').classList.toggle('open');
+}
+
+// ── COUNTDOWN ──
+function startCountdown() {
+  function update() {
+    const target = new Date('2027-01-29T16:00:00+08:00').getTime();
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '000';
+      document.getElementById('cd-hours').textContent = '00';
+      document.getElementById('cd-mins').textContent = '00';
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('cd-days').textContent = String(days).padStart(3,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+  }
+  update(); setInterval(update, 30000);
+}
+
+// ── GALLERY ──
+let lbIndex = 0;
+function buildGallery() {
+  const grid = document.getElementById('galleryGrid');
+  if (grid.childElementCount > 0) return;
+  GALLERY_PHOTOS.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'gallery-item' + (WIDE_INDICES.has(i) ? ' wide' : '');
+    const img = document.createElement('img');
+    img.src = src; img.alt = 'Emily & Bruce'; img.loading = 'lazy';
+    div.appendChild(img);
+    div.onclick = () => openLightbox(i);
+    grid.appendChild(div);
+  });
+}
+function openLightbox(i) {
+  lbIndex = i;
+  document.getElementById('lb-img').src = GALLERY_PHOTOS[i];
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  lbIndex = (lbIndex + dir + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length;
+  document.getElementById('lb-img').src = GALLERY_PHOTOS[lbIndex];
+}
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowRight') lbNav(1);
+    if (e.key === 'ArrowLeft') lbNav(-1);
+    if (e.key === 'Escape') closeLightbox();
+  }
+});
+
+// ── STORY PHOTO LIGHTBOX (reuse main lightbox) ──
+function openStoryLB(el) {
+  const bg = el.style.backgroundImage;
+  const src = bg.slice(bg.indexOf("'") + 1, bg.lastIndexOf("'"));
+  if (!src) return;
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Disable prev/next nav while in story mode
+  document.querySelector('.lb-prev').style.visibility = 'hidden';
+  document.querySelector('.lb-next').style.visibility = 'hidden';
+  window._storyMode = true;
+}
+const _origClose = closeLightbox;
+closeLightbox = function() {
+  _origClose();
+  if (window._storyMode) {
+    document.querySelector('.lb-prev').style.visibility = '';
+    document.querySelector('.lb-next').style.visibility = '';
+    window._storyMode = false;
+  }
+};
+
+// ── RSVP ──
+function selectRadio(el, group) {
+  document.querySelectorAll('#' + group + ' .radio-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const radio = el.querySelector('input');
+  if (radio) radio.checked = true;
+}
+function toggleCheck(el) {
+  el.classList.toggle('selected');
+  const cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = el.classList.contains('selected');
+}
+function submitRSVP() {
+  const name = document.getElementById('rsvp-name').value.trim();
+  const email = document.getElementById('rsvp-email').value.trim();
+  if (!name || !email) { alert('Please fill in your name and email.'); return; }
+
+  const entry = {
+    name, email,
+    guests: document.getElementById('rsvp-guests').value,
+    attending: document.querySelector('[name="attending"]:checked')?.value || '',
+    events: [...document.querySelectorAll('[name="events"]:checked')].map(c => c.value),
+    meal: document.querySelector('[name="meal"]:checked')?.value || '',
+    dietary: document.getElementById('rsvp-dietary').value,
+    note: document.getElementById('rsvp-note').value,
+    timestamp: new Date().toISOString()
+  };
+  try {
+    const existing = JSON.parse(localStorage.getItem('rsvps') || '[]');
+    existing.push(entry);
+    localStorage.setItem('rsvps', JSON.stringify(existing));
+  } catch(e) {}
+
+  document.getElementById('rsvpForm').style.display = 'none';
+  document.getElementById('rsvpSuccess').style.display = 'block';
+}
+
+// ── FAQ ──
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  item.classList.toggle('open');
+}
+
+// ── REVEAL ON SCROLL ──
+function initReveal() {
+  const els = document.querySelectorAll('.reveal:not(.in)');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(el => io.observe(el));
+}
+
+// ── LIVE PHP→USD RATES ──
+function initFxRates() {
+  const els = document.querySelectorAll('.usd[data-php]');
+  if (!els.length) return;
+  fetch('https://open.er-api.com/v6/latest/PHP')
+    .then(r => r.json())
+    .then(data => {
+      const usdPerPhp = data && data.rates && data.rates.USD;
+      if (!usdPerPhp) throw new Error('no rate');
+      els.forEach(el => {
+        const php = parseFloat(el.dataset.php);
+        const usd = php * usdPerPhp;
+        el.textContent = '≈ $' + usd.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' USD';
+      });
+      const asof = document.getElementById('fx-asof');
+      if (asof) {
+        const when = data.time_last_update_utc ? new Date(data.time_last_update_utc) : new Date();
+        asof.textContent = 'USD shown at today’s exchange rate — ₱1 ≈ $' + usdPerPhp.toFixed(4) +
+          ', updated ' + when.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '. Peso rates above are exact; settle in pesos at the resort.';
+      }
+    })
+    .catch(() => {
+      const asof = document.getElementById('fx-asof');
+      if (asof) asof.textContent = 'Peso rates above are exact. USD equivalents update at today’s exchange rate on the live site.';
+    });
+}
+// ── TRAVEL ROUTE ESTIMATOR ──
+// [city, lat, lon] — type any of these in the "Flying from" box; flight time is estimated by distance.
+const AIRPORTS = {
+  LAX:['Los Angeles',33.94,-118.41], SFO:['San Francisco',37.62,-122.38], SAN:['San Diego',32.73,-117.19],
+  SJC:['San Jose',37.36,-121.93], OAK:['Oakland',37.71,-122.22], SMF:['Sacramento',38.70,-121.59],
+  SNA:['Orange County',33.68,-117.87], ONT:['Ontario, CA',34.06,-117.60], BUR:['Burbank',34.20,-118.36],
+  SEA:['Seattle',47.45,-122.31], PDX:['Portland',45.59,-122.60], LAS:['Las Vegas',36.08,-115.15],
+  PHX:['Phoenix',33.43,-112.01], SLC:['Salt Lake City',40.79,-111.98], DEN:['Denver',39.86,-104.67],
+  ANC:['Anchorage',61.17,-149.99],
+  HNL:['Honolulu',21.32,-157.92], OGG:['Maui',20.90,-156.43], KOA:['Kona',19.74,-156.05], LIH:['Kauai',21.98,-159.34],
+  DFW:['Dallas',32.90,-97.04], IAH:['Houston',29.99,-95.34], AUS:['Austin',30.19,-97.67], SAT:['San Antonio',29.53,-98.47],
+  MSP:['Minneapolis',44.88,-93.22], ORD:['Chicago',41.98,-87.90], DTW:['Detroit',42.21,-83.35],
+  STL:['St. Louis',38.75,-90.37], MCI:['Kansas City',39.30,-94.71], BNA:['Nashville',36.12,-86.68],
+  ATL:['Atlanta',33.64,-84.43], MIA:['Miami',25.79,-80.29], FLL:['Fort Lauderdale',26.07,-80.15], MCO:['Orlando',28.43,-81.31],
+  TPA:['Tampa',27.98,-82.53], BOS:['Boston',42.36,-71.01], JFK:['New York (JFK)',40.64,-73.78], EWR:['Newark',40.69,-74.17],
+  LGA:['New York (LGA)',40.78,-73.87], IAD:['Washington Dulles',38.95,-77.46], DCA:['Washington (DCA)',38.85,-77.04],
+  PHL:['Philadelphia',39.87,-75.24], CLT:['Charlotte',35.21,-80.94], RDU:['Raleigh-Durham',35.88,-78.79], BWI:['Baltimore',39.18,-76.67],
+  YVR:['Vancouver',49.19,-123.18], YYC:['Calgary',51.13,-114.01], YYZ:['Toronto',43.68,-79.63], YUL:['Montreal',45.47,-73.74],
+  YEG:['Edmonton',53.31,-113.58], YOW:['Ottawa',45.32,-75.67],
+  MEX:['Mexico City',19.44,-99.07], CUN:['Cancun',21.04,-86.87], GDL:['Guadalajara',20.52,-103.31],
+  GRU:['Sao Paulo',-23.43,-46.47], SCL:['Santiago',-33.39,-70.79], LIM:['Lima',-12.02,-77.11], BOG:['Bogota',4.70,-74.15],
+  LHR:['London (LHR)',51.47,-0.45], LGW:['London (LGW)',51.15,-0.18], MAN:['Manchester',53.35,-2.27],
+  CDG:['Paris',49.01,2.55], AMS:['Amsterdam',52.31,4.76], FRA:['Frankfurt',50.04,8.56], MUC:['Munich',48.35,11.79],
+  BER:['Berlin',52.36,13.50], MAD:['Madrid',40.47,-3.56], BCN:['Barcelona',41.30,2.08], FCO:['Rome',41.80,12.25],
+  MXP:['Milan',45.63,8.72], ZRH:['Zurich',47.46,8.55], VIE:['Vienna',48.11,16.57], CPH:['Copenhagen',55.62,12.65],
+  ARN:['Stockholm',59.65,17.92], OSL:['Oslo',60.19,11.10], HEL:['Helsinki',60.32,24.96], DUB:['Dublin',53.42,-6.27],
+  BRU:['Brussels',50.90,4.48], LIS:['Lisbon',38.77,-9.13], IST:['Istanbul',41.26,28.74], ATH:['Athens',37.94,23.95],
+  WAW:['Warsaw',52.17,20.97], PRG:['Prague',50.10,14.26],
+  DXB:['Dubai',25.25,55.36], AUH:['Abu Dhabi',24.43,54.65], DOH:['Doha',25.27,51.61], RUH:['Riyadh',24.96,46.70],
+  JED:['Jeddah',21.68,39.16], TLV:['Tel Aviv',32.01,34.89], BAH:['Bahrain',26.27,50.63], KWI:['Kuwait',29.23,47.98],
+  NRT:['Tokyo (NRT)',35.77,140.39], HND:['Tokyo (HND)',35.55,139.78], KIX:['Osaka',34.43,135.24], NGO:['Nagoya',34.86,136.81],
+  FUK:['Fukuoka',33.59,130.45], ICN:['Seoul (ICN)',37.46,126.44], GMP:['Seoul (GMP)',37.56,126.79], PUS:['Busan',35.18,128.94],
+  PEK:['Beijing',40.08,116.58], PVG:['Shanghai',31.14,121.81], CAN:['Guangzhou',23.39,113.30], SZX:['Shenzhen',22.64,113.81],
+  CTU:['Chengdu',30.58,103.95], HKG:['Hong Kong',22.31,113.92], TPE:['Taipei',25.08,121.23], KHH:['Kaohsiung',22.58,120.35],
+  BKK:['Bangkok (BKK)',13.69,100.75], DMK:['Bangkok (DMK)',13.91,100.61], HKT:['Phuket',8.11,98.31], SGN:['Ho Chi Minh City',10.82,106.66],
+  HAN:['Hanoi',21.22,105.81], SIN:['Singapore',1.36,103.99], KUL:['Kuala Lumpur',2.74,101.71], CGK:['Jakarta',-6.13,106.66],
+  DPS:['Bali',-8.75,115.17], DEL:['Delhi',28.56,77.10], BOM:['Mumbai',19.09,72.87], MAA:['Chennai',12.99,80.17],
+  BLR:['Bengaluru',13.20,77.71], HYD:['Hyderabad',17.24,78.43], CMB:['Colombo',7.18,79.88], KTM:['Kathmandu',27.70,85.36],
+  DAC:['Dhaka',23.84,90.40], MLE:['Male',4.19,73.53], PNH:['Phnom Penh',11.55,104.84], REP:['Siem Reap',13.41,103.81],
+  RGN:['Yangon',16.91,96.13], BWN:['Bandar Seri Begawan',4.94,114.93], MFM:['Macau',22.16,113.59],
+  SYD:['Sydney',-33.94,151.18], MEL:['Melbourne',-37.67,144.84], BNE:['Brisbane',-27.38,153.12], PER:['Perth',-31.94,115.97],
+  ADL:['Adelaide',-34.95,138.53], AKL:['Auckland',-37.01,174.79], CHC:['Christchurch',-43.49,172.53], NAN:['Nadi',-17.76,177.44],
+  GUM:['Guam',13.48,144.80],
+  JNB:['Johannesburg',-26.13,28.24], CPT:['Cape Town',-33.97,18.60], CAI:['Cairo',30.11,31.41], NBO:['Nairobi',-1.32,36.93],
+  LOS:['Lagos',6.58,3.32], ADD:['Addis Ababa',8.98,38.80],
+  MNL:['Manila',14.51,121.02], CEB:['Cebu',10.31,123.98], DVO:['Davao',7.13,125.65], CRK:['Clark',15.19,120.56],
+  ILO:['Iloilo',10.83,122.49], BCD:['Bacolod',10.78,123.01]
+};
+const MNL_LL = [14.51, 121.02];
+const LEG_MNL_MPH = 65, LEG_MPH_RESORT = 30, MNL_CONNECT = 240;
+function haversine(a, b){
+  const R=6371, toR=Math.PI/180;
+  const dLat=(b[0]-a[0])*toR, dLon=(b[1]-a[1])*toR;
+  const la1=a[0]*toR, la2=b[0]*toR;
+  const x=Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function flightMinsTo(code){
+  if(code==='MNL') return 0;
+  const a=AIRPORTS[code]; if(!a) return null;
+  const km=haversine([a[1],a[2]], MNL_LL);
+  return Math.round(km/800*60 + 50);
+}
+function fmtDur(min){ const h=Math.floor(min/60), m=Math.round(min%60); return (h?h+'h':'')+(h&&m?' ':'')+(m?m+'m':'')||'0m'; }
+function fmtHoursApprox(min){ const v=Math.round((min/60)*2)/2; return '~'+String(v).replace(/\.5$/,'½')+' hours'; }
+function populateAirportList(){
+  const dl=document.getElementById('airport-list'); if(!dl) return;
+  const codes=Object.keys(AIRPORTS).sort((x,y)=>AIRPORTS[x][0].localeCompare(AIRPORTS[y][0]));
+  dl.innerHTML = codes.map(c=>'<option value="'+AIRPORTS[c][0]+' ('+c+')"></option>').join('');
+}
+function resolveCode(raw){
+  if(!raw) return null;
+  const s=raw.trim();
+  let m=s.match(/\(([A-Za-z]{3})\)\s*$/); if(m){ const c=m[1].toUpperCase(); if(AIRPORTS[c]) return c; }
+  const up=s.toUpperCase(); if(up.length===3 && AIRPORTS[up]) return up;
+  const lc=s.toLowerCase();
+  const hit=Object.keys(AIRPORTS).find(c=>AIRPORTS[c][0].toLowerCase()===lc);
+  if(hit) return hit;
+  const partial=Object.keys(AIRPORTS).find(c=>AIRPORTS[c][0].toLowerCase().startsWith(lc));
+  return partial||null;
+}
+function onOriginInput(raw){
+  const code=resolveCode(raw);
+  if(code){ renderTravel(code); return; }
+  const total=document.getElementById('travel-total');
+  if(total) total.innerHTML='<span class="tt-label">Hmm, we couldn’t find that one</span><span class="tt-value" style="font-size:1.3rem;">Try a major airport</span><span class="tt-note">Type a city name or its 3-letter airport code (for example “London” or “LHR”) and pick from the list.</span>';
+}
+function renderTravel(code){
+  const a=AIRPORTS[code]; if(!a) return;
+  const toManila=flightMinsTo(code);
+  try{ localStorage.setItem('travelOrigin', code); }catch(e){}
+  const inp=document.getElementById('origin-input'); if(inp && resolveCode(inp.value)!==code) inp.value=a[0]+' ('+code+')';
+  const viz=document.getElementById('route-viz'); if(!viz) return;
+  const isMNL=code==='MNL';
+  const nodes=[];
+  if(!isMNL) nodes.push({code:code,label:a[0]});
+  nodes.push({code:'MNL',label:'Manila'});
+  nodes.push({code:'MPH',label:'Caticlan'});
+  nodes.push({code:'RESORT',label:'Shangri-La',dest:true});
+  const segs=[];
+  if(!isMNL) segs.push({icon:'✈',t:fmtDur(toManila)});
+  segs.push({icon:'✈',t:fmtDur(LEG_MNL_MPH)});
+  segs.push({icon:'⛵',t:fmtDur(LEG_MPH_RESORT)});
+  let h='';
+  nodes.forEach((n,i)=>{
+    h+='<div class="route-node'+(n.dest?' dest':'')+'"><span class="route-code">'+(n.code==='RESORT'?'✦':n.code)+'</span><span class="route-city">'+n.label+'</span></div>';
+    if(segs[i]) h+='<div class="route-seg"><span class="route-icon">'+segs[i].icon+'</span><span class="route-time">'+segs[i].t+'</span></div>';
+  });
+  viz.innerHTML=h;
+  const s1t=document.getElementById('step1-title'), s1=document.getElementById('step1-text');
+  if(isMNL){
+    s1t.textContent='You’re starting in Manila';
+    s1.innerHTML='No international leg for you — you’ll connect straight to your Caticlan flight at Ninoy Aquino International Airport (NAIA). NAIA has four terminals, so confirm which one your Caticlan flight departs from.';
+  } else {
+    s1t.textContent='Fly to Manila (MNL)';
+    s1.innerHTML='About <strong>'+fmtDur(toManila)+'</strong> in the air from '+a[0]+' to Ninoy Aquino International Airport (NAIA), depending on your routing. NAIA has four terminals; your Caticlan flight may leave from a different one, so look for the free terminal-transfer shuttle after baggage claim.';
+  }
+  const total=document.getElementById('travel-total');
+  if(isMNL){
+    total.innerHTML='<span class="tt-label">Approx. travel time to the resort</span><span class="tt-value">~3 hours</span><span class="tt-note">Manila → Caticlan → Shangri-La, including a short connection.</span>';
+  } else {
+    const t=toManila+MNL_CONNECT+LEG_MNL_MPH+LEG_MPH_RESORT;
+    total.innerHTML='<span class="tt-label">Approx. travel time from '+a[0]+'</span><span class="tt-value">'+fmtHoursApprox(t)+'</span><span class="tt-note">Gate to resort, including a recommended 4-hour Manila connection. A rough estimate — actual times vary by routing and layovers.</span>';
+  }
+}
+(function(){
+  populateAirportList();
+  let saved='LAX';
+  try{ const s=localStorage.getItem('travelOrigin'); if(s && AIRPORTS[s]) saved=s; }catch(e){}
+  if(document.getElementById('route-viz')) renderTravel(saved);
+})();
+
+initFxRates();
+</script>
+</body>
+</html>
+
+
+<style id="__om-edit-overrides">
+#galleryGrid [src="assets/gallery/02.jpg"] { height: 34px !important }
+#galleryGrid [src="assets/gallery/02.jpg"] { height: 334px !important }
+#galleryGrid [src="assets/gallery/02.jpg"] { height: 384px !important }
+</style>
