@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Emily & Bruce — January 29, 2027</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Emily &amp; Bruce — January 29, 2027, Shangri-La Boracay, Philippines.">
+<meta property="og:title" content="Emily &amp; Bruce">
+<meta property="og:description" content="January 29, 2027 · Shangri-La Boracay, Philippines">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/site-assets/hero.webp">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26' font-family='Georgia,serif'>&amp;</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -688,19 +695,19 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a class="nav-brand" onclick="showPage('home')" href="#">E &amp; B</a>
+    <a class="nav-brand" href="/home">E &amp; B</a>
     <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="navlinks">
-      <li><a href="#" onclick="showPage('home')" data-page="home" class="active">Home</a></li>
-      <li><a href="#" onclick="showPage('schedule')" data-page="schedule">Schedule</a></li>
-      <li><a href="#" onclick="showPage('story')" data-page="story">Our Story</a></li>
-      <li><a href="#" onclick="showPage('travel')" data-page="travel">Travel &amp; Stay</a></li>
-      <li><a href="#" onclick="showPage('gallery')" data-page="gallery">Gallery</a></li>
-      <li><a href="#" onclick="showPage('rsvp')" data-page="rsvp">RSVP</a></li>
-      <li><a href="#" onclick="showPage('registry')" data-page="registry">Registry</a></li>
-      <li><a href="#" onclick="showPage('faq')" data-page="faq">FAQ</a></li>
+      <li><a href="/home" data-page="home" class="active">Home</a></li>
+      <li><a href="/schedule" data-page="schedule">Schedule</a></li>
+      <li><a href="/story" data-page="story">Our Story</a></li>
+      <li><a href="/travel" data-page="travel">Travel &amp; Stay</a></li>
+      <li><a href="/gallery" data-page="gallery">Gallery</a></li>
+      <li><a href="/rsvp" data-page="rsvp">RSVP</a></li>
+      <li><a href="/registry" data-page="registry">Registry</a></li>
+      <li><a href="/faq" data-page="faq">FAQ</a></li>
     </ul>
     <span class="nav-date">Jan 29, 2027</span>
   </div>
@@ -1254,7 +1261,7 @@ EST 2016
   <div class="story-cta">
     <h3>And the next <em>chapter</em></h3>
     <p>Begins on January 29, 2027, on a beach in Boracay &mdash; with all of you. See the full gallery for more.</p>
-    <a href="#" onclick="showPage('gallery'); return false;" class="cta-btn">View the Gallery &nbsp;&rarr;</a>
+    <a href="/gallery" class="cta-btn">View the Gallery &nbsp;&rarr;</a>
   </div>
 </div>
 
@@ -1407,10 +1414,39 @@ const GALLERY_PHOTOS = [
 const WIDE_INDICES = new Set([0, 7]); // gallery items spanning 2 cols
 
 // ── INIT ──
+// ── ROUTING ──
+// Real URLs (/home, /faq, …) backed by the History API. The server serves
+// this same file for every page path, so the initial page comes from the URL.
+const PAGE_NAMES = ['home','schedule','story','travel','gallery','rsvp','registry','faq'];
+
+function pageFromPath() {
+  const name = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  return PAGE_NAMES.includes(name) ? name : 'home';
+}
+
+function navigate(name, push = true) {
+  if (push) history.pushState({ page: name }, '', '/' + name);
+  showPage(name);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('a[href^="/"]').forEach(a => {
+    const name = a.getAttribute('href').slice(1);
+    if (!PAGE_NAMES.includes(name)) return;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      navigate(name);
+    });
+  });
+
+  window.addEventListener('popstate', () => {
+    showPage(pageFromPath());
+  });
+
   startCountdown();
   buildGallery();
   initReveal();
+  showPage(pageFromPath());
 });
 
 // ── NAV ──
@@ -1732,8 +1768,3 @@ initFxRates();
 </html>
 
 
-<style id="__om-edit-overrides">
-#galleryGrid [src="assets/gallery/02.jpg"] { height: 34px !important }
-#galleryGrid [src="assets/gallery/02.jpg"] { height: 334px !important }
-#galleryGrid [src="assets/gallery/02.jpg"] { height: 384px !important }
-</style>
